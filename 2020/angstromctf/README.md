@@ -262,7 +262,7 @@ function endGame() {
 }
 ```
 
-
+payload
 ```javascript
 setInterval(function(){  window.socket.emit("click",shapes[0].x,shapes[1].y)   }, 10)
 ```
