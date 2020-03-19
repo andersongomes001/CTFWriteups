@@ -1,4 +1,4 @@
-## ångstromCTF 2020 Writeup 
+# ångstromCTF 2020 Writeup 
 
 # No Canary - Binary
 Olhando o código fonte encontramos uma função vulnerável gets, como já foi informado no nome da chall não tem a proteção canary ativa.
