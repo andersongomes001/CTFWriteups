@@ -9,7 +9,7 @@ const app = express();
 const serv = http.createServer(app);
 const io = socket.listen(serv);
 const port = process.env.PORT || 60600;
-
+process.env.FLAG = "actf{w0000sh_1s_th3_s0und_0f_th3_r3qu3st_fly1ng_p4st_th3_fr0nt3nd}";
 function rand(bound) {
     return Math.floor(Math.random() * bound);
 }
@@ -36,9 +36,9 @@ const hbs = exphbs.create({
     helpers: {}
 });
 
-app.engine("hbs", hbs.engine);
-app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "views"));
+//app.engine("hbs", hbs.engine);
+//app.set("view engine", "hbs");
+//app.set("views", path.join(__dirname, "views"));
 
 io.on("connection", client => {
     let game;
@@ -117,7 +117,8 @@ io.on("connection", client => {
 });
 
 app.get("/", function(req, res) {
-    res.render("home");
+    //res.render("home");
+    res.sendFile(path.join(__dirname + '/Woooosh.html'));
 });
 
 serv.listen(port, function() {
