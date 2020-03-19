@@ -1,12 +1,12 @@
 # No Canary - Binary
-Olhando o codigo fonte encontramos uma função vulneravel `gets`, como ja foi informado no nome da chall não tem a proteção canary ativa.
+Olhando o código fonte encontramos uma função vulnerável gets, como já foi informado no nome da chall não tem a proteção canary ativa.
 ```c
 char name[20];
 gets(name);
 ```
-* precisamos encontrar a quantidade de bytes para sobrescrever `$RIP`
-* encontrar um endereço de retorno para chamar a função `flag`
-* pegar o endereço da função `flag`
+* Precisamos encontrar a quantidade de bytes para sobrescrever `$RIP`
+* Encontrar um endereço de retorno para chamar a função `flag`
+* Pegar o endereço da função `flag`
 ```python
 from pwn import *
 context(arch='amd64', os='linux')
@@ -30,7 +30,7 @@ run()
 ```
 FLAG >> actf{that_gosh_darn_canary_got_me_pwned!}
 # Canary - Binary
-Olhando o codigo fonte encontramos algumas funções vulneraveis `gets`,`printf`, como ja foi informado no nome da chall a proteção canary esta ativada.
+Olhando o código fonte encontramos algumas funções vulneráveis `gets`,`printf`, como já foi informado no nome da chall a canary esta ativada.
 ```c
 char name[20];
 gets(name);
@@ -38,10 +38,10 @@ printf(strcat(name, "!\n"));
 char info[50];
 gets(info);
 ```
-* na primeira entrada temos que vazar o `Stack Cookie` caso os cookie seja sobrecrita com um valor diferente o programa sera encerrado
-* sobrescrever o Registrador que checa se o cookie foi alterado neste caso é o $RAX
-* sobrescrever $RBP com algum endereço
-* sobrescrever $RSP com o endereço da função flag
+* Na primeira entrada temos que vazar o `Stack Cookie` caso os cookie seja sobrescrita com um valor diferente o programa será encerrado
+* Sobrescrever o Registrador que checa se o cookie foi alterado neste caso é o $RAX
+* Sobrescrever $RBP com algum endereço
+* Sobrescrever $RSP com o endereço da função flag
 
 ```python
 from pwn import *
@@ -80,15 +80,15 @@ run()
 
 FLAG >> actf{youre_a_canary_killer_>:(}
 # Bop It - Binary
-Olhando o codigo aparentemente não existe nenhuma função vulneravel no codigo fonte.
-mas olhando bem exite sim uma função vulneravel `strncat`
+Olhando o código aparentemente não existe nenhuma função vulnerável no código fonte.
+Mas olhando bem existe sim uma função vulnerável `strncat`
 ```c
 strncat(wrong, guess, guessLen);
 strncat(wrong, " was wrong. Better luck next time!\n", 35);
 ```
 | `strncpy` e `strncat` não garante que a sequência seja terminada em nulo.
 
-Então porque não enviar varios null e ver o que acontece.
+Então porque não enviar vários null e ver o que acontece.
 ```python
 from pwn import *
 #echo 2 > /proc/sys/kernel/randomize_va_space
@@ -115,23 +115,24 @@ run()
 ```
 FLAG >> actf{bopp1ty_bop_bOp_b0p}
 # Consolation - Web
-Esta é bem facil, cliando no unico botão que tem na tela, ele incrementa o valor e limpa o console.
+Esta é bem fácil, clicando no único botão que tem na tela, ele incrementa o valor e limpa o console.
 
 ![](assets/payme.png)
 
-é so baixar `iftenmillionfireflies.js` e modificar a palavra `clear` que na verdade é a função que limpa o console por qualquer coisa
+É só baixar `iftenmillionfireflies.js` e modificar a palavra `clear` que na verdade é a função que limpa o console por qualquer coisa.
 
 ```bash
 cat iftenmillionfireflies.js | sed 's/clear/hacker/' > new.txt
 ```
-depois copie e cole o script do arquivo `new.txt` e cole no console
+Depois copie e cole o script do arquivo `new.txt` e cole no console.
 
 ![](assets/hacked.png)
 
 FLAG >> actf{you_would_n0t_beli3ve_your_eyes}
 # Secret Agents - Web 
-Olhando o codigo fonte da para identificar um sql injection, tem mais algumas coisa logo abaixo, se o resultado da consulta tiver mais de uma linha ou não tiver nenhum resultado recebemos um erro.
-temos que percorrer linha por linha ate achar a flag.
+Olhando o código fonte da para identificar um sql injection, tem mais algumas coisas logo abaixo, se o resultado da consulta tiver mais de uma linha ou não tiver nenhum resultado recebemos um erro.
+Temos que percorrer linha por linha ate achar a flag.
+
 ```python
 for r in cursor.execute("SELECT * FROM Agents WHERE UA='%s'"%(u), multi=True):
 		if r.with_rows:
@@ -181,8 +182,8 @@ print("actf{"+str("".join(flag))+"}")
 ```
 FLAG >> actf{nyoom_1_4m_sp33d}
 # Defund's Crypt - Web
-Este bloco de codigo é bem interessante, posi ele faz o filtro somente do mime type do arquivo, e so é permitido três tipos.
-Obs: a flag esta no arquivo /flag.txt
+Este bloco de código é bem interessante, pois ele faz o filtro somente do mime type do arquivo, e só é permitido três tipos.
+Obs: A flag esta no arquivo /flag.txt
 ```php
 $finfo = new finfo(FILEINFO_MIME_TYPE);
 if (false === $ext = array_search(
@@ -197,7 +198,7 @@ if (false === $ext = array_search(
     throw new RuntimeException("Your memory isn't picturesque enough to be remembered.");
 }
 ```
-teoricamnte se eu pegar qualquer imagem que estaja na lista e moficar colocando `imagem.jpg.php` teria que fazer o upload normalmente.
+Teoricamente se eu pegar qualquer imagem que esteja na lista e modicar colocando `imagem.jpg.php` teria que fazer o upload normalmente.
 
 ```bash
 cp crypt.jpg crypt.jpg.php
@@ -209,9 +210,9 @@ No final do arquivo.
 FLAG >> actf{th3_ch4ll3ng3_h4s_f4ll3n_but_th3_crypt_rem4ins}
 
 # Woooosh - Web
-Este desafio eu não consegui resolver a tempo, mas ele era bem interesante.
+Este desafio eu não consegui resolver a tempo, mas ele era bem interessante.
 
-no codigo fonte tem duas coisa intersante a primira é que, quando tem um clique na tela, é enviado para o servidor uma requisição, com a posição x e y da tela
+No código fonte tem duas coisas interessante a primeira é que, quando tem um clique na tela, é enviado para o servidor uma requisição, com a posição x e y da tela
 `shapes[0].x e shapes[1].y` a cada acerto o `score` é incrementado;
 
 
