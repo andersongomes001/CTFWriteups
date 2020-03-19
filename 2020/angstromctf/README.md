@@ -124,7 +124,7 @@ Esta é bem fácil, clicando no único botão que tem na tela, ele incrementa o 
 ```bash
 cat iftenmillionfireflies.js | sed 's/clear/hacker/' > new.txt
 ```
-Depois copie e cole o script do arquivo `new.txt` e cole no console.
+Depois copie o script do arquivo `new.txt` e cole no console.
 
 ![](assets/hacked.png)
 
